@@ -1,58 +1,156 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Games</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Steam-Style Arcade Hub</title>
   <style>
+    :root {
+      --bg: #0f1a24;
+      --panel: #16202d;
+      --card: #1b2838;
+      --card-hover: #25384d;
+      --text: #c7d5e0;
+      --muted: #8f98a0;
+      --accent: #66c0f4;
+      --success: #5ba32b;
+      --border: rgba(102, 192, 244, 0.25);
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-      background: #111;
-      color: white;
-      font-family: Arial;
-      text-align: center;
       margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: radial-gradient(circle at top, #22354a 0%, var(--bg) 45%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: #171a21;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .status {
+      background: rgba(91, 163, 43, 0.2);
+      color: #a4d007;
+      border: 1px solid rgba(164, 208, 7, 0.35);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 48px;
     }
 
     h1 {
-      padding: 30px;
+      margin: 8px 0 24px;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
     }
 
     .games {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
     }
 
     .card {
-      background: #222;
-      width: 250px;
-      padding: 20px;
-      border-radius: 15px;
       text-decoration: none;
-      color: white;
-      transition: 0.2s;
+      color: inherit;
+      background: linear-gradient(145deg, var(--card), #141f2b);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
     }
 
-    .card:hover {
-      transform: scale(1.05);
-      background: #333;
+    .card:hover,
+    .card:focus-visible {
+      transform: translateY(-4px);
+      background: linear-gradient(145deg, var(--card-hover), #182635);
+      border-color: var(--border);
+    }
+
+    .card-banner {
+      height: 140px;
+      background:
+        linear-gradient(125deg, rgba(102, 192, 244, 0.4), rgba(13, 24, 34, 0.35)),
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255, 255, 255, 0.03) 0,
+          rgba(255, 255, 255, 0.03) 12px,
+          rgba(0, 0, 0, 0.08) 12px,
+          rgba(0, 0, 0, 0.08) 24px
+        );
+      display: flex;
+      align-items: end;
+      padding: 12px;
+      font-size: 0.9rem;
+      color: #dff4ff;
+    }
+
+    .card-content { padding: 14px; }
+    .card-content h2 { margin: 0 0 8px; font-size: 1.2rem; }
+    .card-content p { margin: 0 0 12px; color: var(--muted); }
+
+    .play {
+      display: inline-block;
+      background: linear-gradient(to bottom, #8bc53f, #5a7f1f);
+      color: #fff;
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
     }
   </style>
 </head>
-
 <body>
+  <header class="topbar">
+    <div class="brand">COSCOMAN ARCADE</div>
+    <div class="status">2 games online</div>
+  </header>
 
-<h1>🎮 My Games Website</h1>
+  <main>
+    <h1>Featured Games</h1>
+    <div class="games">
+      <a class="card" href="snake.html">
+        <div class="card-banner">Arcade • Single Player</div>
+        <div class="card-content">
+          <h2>Snake Reloaded</h2>
+          <p>Classic Snake with keyboard + touch controls.</p>
+          <span class="play">Play Game</span>
+        </div>
+      </a>
 
-<div class="games">
-
-  <a class="card" href="snake.html">
-    <h2>Snake Game</h2>
-    <p>Classic snake game</p>
-  </a>
-
-</div>
-
+      <a class="card" href="phaser-multiplayer.html">
+        <div class="card-banner">Phaser • Local Multiplayer</div>
+        <div class="card-content">
+          <h2>Arena Dash Duo</h2>
+          <p>Two-player Phaser game with mobile controls for both players.</p>
+          <span class="play">Play Game</span>
+        </div>
+      </a>
+    </div>
+  </main>
 </body>
 </html>
