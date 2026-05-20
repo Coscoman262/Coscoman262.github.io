@@ -1,27 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Snake</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake Reloaded</title>
   <style>
     body {
       margin: 0;
-      background: black;
+      background: #0e141b;
+      color: #c7d5e0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    canvas {
-      background: #222;
+    #game {
+      background: #1b2838;
+      border: 2px solid #66c0f4;
+      max-width: 92vw;
+      max-height: 92vw;
+      width: 400px;
+      height: 400px;
+      touch-action: none;
     }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 56px);
+      gap: 8px;
+      user-select: none;
+    }
+
+    .btn {
+      background: #2a475e;
+      border: 1px solid #66c0f4;
+      color: white;
+      border-radius: 8px;
+      height: 56px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .hint {
+      font-size: 0.9rem;
+      color: #8f98a0;
+      text-align: center;
+    }
+
+    .empty { visibility: hidden; }
   </style>
 </head>
-
 <body>
-
 <canvas id="game" width="400" height="400"></canvas>
+
+<div class="controls" aria-label="Touch controls">
+  <div class="empty"></div>
+  <button class="btn" data-dir="up">▲</button>
+  <div class="empty"></div>
+  <button class="btn" data-dir="left">◀</button>
+  <button class="btn" data-dir="down">▼</button>
+  <button class="btn" data-dir="right">▶</button>
+</div>
+<div class="hint">Arrow keys or touch buttons.</div>
 
 <script>
 const canvas = document.getElementById("game");
@@ -39,22 +83,30 @@ let snake = {
   maxCells: 4
 };
 
-let apple = {
-  x: 320,
-  y: 320
-};
+let apple = { x: 320, y: 320 };
 
 function random(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function setDirection(dir) {
+  if (dir === "left" && snake.dx === 0) {
+    snake.dx = -grid; snake.dy = 0;
+  } else if (dir === "up" && snake.dy === 0) {
+    snake.dy = -grid; snake.dx = 0;
+  } else if (dir === "right" && snake.dx === 0) {
+    snake.dx = grid; snake.dy = 0;
+  } else if (dir === "down" && snake.dy === 0) {
+    snake.dy = grid; snake.dx = 0;
+  }
+}
+
 function loop() {
   requestAnimationFrame(loop);
-
   if (++count < 4) return;
-
   count = 0;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   snake.x += snake.dx;
   snake.y += snake.dy;
@@ -64,34 +116,25 @@ function loop() {
   if (snake.y < 0) snake.y = canvas.height - grid;
   if (snake.y >= canvas.height) snake.y = 0;
 
-  snake.cells.unshift({x: snake.x, y: snake.y});
+  snake.cells.unshift({ x: snake.x, y: snake.y });
+  if (snake.cells.length > snake.maxCells) snake.cells.pop();
 
-  if (snake.cells.length > snake.maxCells) {
-    snake.cells.pop();
-  }
+  ctx.fillStyle = "#ff4b4b";
+  ctx.fillRect(apple.x, apple.y, grid - 1, grid - 1);
 
-  ctx.fillStyle = "red";
-  ctx.fillRect(apple.x, apple.y, grid-1, grid-1);
-
-  ctx.fillStyle = "lime";
-
+  ctx.fillStyle = "#7dff7d";
   snake.cells.forEach((cell, index) => {
-    ctx.fillRect(cell.x, cell.y, grid-1, grid-1);
+    ctx.fillRect(cell.x, cell.y, grid - 1, grid - 1);
 
     if (cell.x === apple.x && cell.y === apple.y) {
       snake.maxCells++;
-
       apple.x = random(0, 20) * grid;
       apple.y = random(0, 20) * grid;
     }
 
     for (let i = index + 1; i < snake.cells.length; i++) {
-      if (
-        cell.x === snake.cells[i].x &&
-        cell.y === snake.cells[i].y
-      ) {
-        snake.x = 160;
-        snake.y = 160;
+      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+        snake.x = 160; snake.y = 160;
         snake.cells = [];
         snake.maxCells = 4;
         snake.dx = grid;
@@ -102,29 +145,25 @@ function loop() {
 }
 
 document.addEventListener("keydown", e => {
-  if (e.key === "ArrowLeft" && snake.dx === 0) {
-    snake.dx = -grid;
-    snake.dy = 0;
-  }
+  const keyToDir = {
+    ArrowLeft: "left",
+    ArrowUp: "up",
+    ArrowRight: "right",
+    ArrowDown: "down"
+  };
+  if (keyToDir[e.key]) setDirection(keyToDir[e.key]);
+});
 
-  if (e.key === "ArrowUp" && snake.dy === 0) {
-    snake.dy = -grid;
-    snake.dx = 0;
-  }
-
-  if (e.key === "ArrowRight" && snake.dx === 0) {
-    snake.dx = grid;
-    snake.dy = 0;
-  }
-
-  if (e.key === "ArrowDown" && snake.dy === 0) {
-    snake.dy = grid;
-    snake.dx = 0;
-  }
+document.querySelectorAll("[data-dir]").forEach(btn => {
+  const press = (evt) => {
+    evt.preventDefault();
+    setDirection(btn.dataset.dir);
+  };
+  btn.addEventListener("pointerdown", press);
+  btn.addEventListener("click", press);
 });
 
 requestAnimationFrame(loop);
 </script>
-
 </body>
 </html>
